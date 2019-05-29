@@ -1,0 +1,64 @@
+<h1>User Search</h1>
+
+<p>
+<% flash.each do |key, value| %>
+  <b><%= value %></b>
+<% end %>
+</p>
+
+<%= form_tag users_search_by_username_path, method: :get do %>
+  Username: <%= text_field_tag :username, params[:username] %>
+  <br><br>
+  Start Date: <%= date_field_tag :start_date, params[:start_date] %>
+  <br><br>
+  End Date: <%= date_field_tag :end_date, params[:end_date] %>
+  <br><br>
+  Week Start Date: <%= date_field_tag :week_start_date, params[:week_start_date] %>
+
+  <br><br>
+  <%= submit_tag 'Search' %>
+<% end %>
+<br><br>
+
+<% if @user.present? %>
+  <h3><%= @user.username %></h3>
+
+  <% if @user.question_responses.exists? %>
+    <p>
+      <b>Accuracy for dates:</b>
+      <%= @accuracy %>
+    </p>
+
+    <p>
+      <b>Most Recently Answered Question:</b>
+      <%= @user.most_recent_answer.correct %> on <%= @user.most_recent_answer.created_at.in_time_zone(@user.timezone) %>
+    </p>
+
+    <p>
+      <b>Accuracy current month:</b>
+      <%= @accuracy_current_month %>
+    </p>
+
+    <p>
+      <b>Global Accuracy Rank:</b>
+      <%= @global_accuracy_rank %>
+    </p>
+
+    <p>
+      <b>Higher Ranked Users For Week:</b>
+      <%= @higher_ranked_users_for_week.pluck(:username).join(', ') if @higher_ranked_users_for_week %>
+    </p>
+
+    <p>
+      <b>Lower Ranked Users For Week:</b>
+      <%= @lower_ranked_users_for_week.pluck(:username).join(', ') if @lower_ranked_users_for_week %>
+    </p>
+  <% else %>
+    <p>
+      No questions answered yet.
+    </p>
+  <% end %>
+
+<% elsif params[:username].present? %>
+  User not found
+<% end %>
